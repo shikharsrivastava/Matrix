@@ -1,6 +1,6 @@
 /* 
  * A simple header only Matrix library using
- * expression templates and generic lamdas 
+ * expression templates and generic lambdas 
  * for efficient matrix computations
  */
 
@@ -9,6 +9,12 @@
 #define INCLUDED_MATRIX
 #include<bits/stdc++.h>
 
+
+	///////////////////////
+	//                   //
+	// class BinaryExpr  //
+	//                   //
+	///////////////////////
 
 /* Class to repressent binary expressions
  * while evaluating the expression tree using
@@ -23,7 +29,7 @@ class BinaryExpr
 	Expr2		_r;
 
 	public:
-	BinaryExpr(Expr1 &l, Expr2 &r)
+	BinaryExpr(const Expr1 &l, const Expr2 &r)
 	: _l(l)
 	, _r(r)
 	{}
@@ -52,82 +58,34 @@ class Matrix
 
 	// typedefs
 	typedef std::vector< std::vector<T> > 	type;
-	typedef unsigned int					size_type;
 	
 	// Data members
-	size_type		_row;
-	size_type		_col;
+	uint 			_row;
+	uint			_col;
 	type			_mat;
 
 	// Constructors
-	Matrix()
-	: _row(0)
-	, _col(0)
-	,_mat(0,std::vector<T>(0))
-	{}
+	Matrix();
+	Matrix(int r, int c);
+	Matrix(const Matrix& dup);
 
-	Matrix(int r, int c)
-	: _row(r)
-	, _col(c)
-	, _mat(r,std::vector<T>(c))
-	{}
 
-	Matrix(const Matrix& dup)
-	: _row(dup._row)
-	, _col(dup._col)
-	, _mat(_row, std::vector<T>(_col))
-	{
-		for(int i=0; i < _row; i++)
-			for(int j=0; j< _col; j++)
-				_mat[i][j] = dup._mat[i][j];
-	}
-
+	// Getters
+	const uint& getRow();
+	const uint& getCol();
 
 	// Overloaded operators
-	template <typename Expr1, typename Expr2, typename OP>
-	inline Matrix<T>& operator=(BinaryExpr<Expr1, Expr2, OP> bexp)
-	{
-		_mat = bexp.eval()._mat;
-		return *this;
-	}
-
-	void operator+=(Matrix<T>& rhs)
-	{
-		if(_row != rhs._row || _col != rhs._col)
-		{
-			std::cerr << "Dimension  mismatch\n";
-			return;
-		}
-		for(int i=0; i < _row; i++)
-			for(int j=0; j < _col; j++)
-				_mat[i][j] += rhs._mat[i][j];
-		return;
-	}
-
-	void operator *=(Matrix<T>& rhs)
-	{
-		if( _col != rhs._row)
-		{
-			std::cerr << "Dimension  mismatch\n";
-			return;
-		}
-		Matrix<T> result(_row, rhs._col);
-		for(int i=0 ;i< _row; i++)
-			for(int j=0; j< rhs._col; j++)
-			{
-				result._mat[i][j] = 0;
-				for(int k=0; k< _col; k++)
-					result._mat[i][j] += _mat[i][k] * rhs._mat[k][j];  
-			}
-		_col = rhs._col;
-		_mat = result._mat;
-
-	}
-	Matrix& eval()
-	{
-		return *this;
-	}
+	std::vector<T>& operator[](const uint ind);
 	
+	template<typename Expr1, typename Expr2, typename OP>
+	Matrix<T>& operator=(BinaryExpr<Expr1, Expr2, OP> bexp);
+
+	void operator+=(const Matrix<T>& rhs);
+
+	void operator*=(const Matrix<T>& rhs);
+
+	// General functions
+	Matrix& eval();
 	void print()
 	{
 		for(int i=0;i< _row; i++) {
@@ -139,13 +97,117 @@ class Matrix
 	}
 };
 
+		///////////////////
+		//               //
+		//  Class Matrix //
+		//               //
+		///////////////////
+
+// Constructors
+template<typename T>
+Matrix<T>::	Matrix()
+: _row(0)
+, _col(0)
+,_mat(0,std::vector<T>(0))
+{}
+
+template<typename T>
+Matrix<T>::Matrix(int r, int c)
+: _row(r)
+, _col(c)
+, _mat(r,std::vector<T>(c))
+{}
+
+template<typename T>
+Matrix<T>::Matrix(const Matrix& dup)
+: _row(dup._row)
+, _col(dup._col)
+, _mat(_row, std::vector<T>(_col))
+{
+	for(int i=0; i < _row; i++)
+		for(int j=0; j< _col; j++)
+			_mat[i][j] = dup._mat[i][j];
+}
+
+// Getters
+template<typename T>
+inline const uint& Matrix<T>::getRow()
+{
+	return _row;
+}
+
+template<typename T>
+inline const uint& Matrix<T>::getCol()
+{
+	return _col;
+}
+
+// Overloaded operators
+template<typename T>
+inline std::vector<T>& Matrix<T>::operator[](const uint ind)
+{
+	return _mat[ind];
+}
+
+template <typename T>
+template <typename Expr1, typename Expr2, typename OP>
+inline Matrix<T>& Matrix<T>::operator=(BinaryExpr<Expr1, Expr2, OP> bexp)
+{
+	_mat = bexp.eval()._mat;
+	return *this;
+}
+
+template<typename T>
+void Matrix<T>::operator+=(const Matrix<T>& rhs)
+{
+	if(_row != rhs._row || _col != rhs._col)
+	{
+		std::cerr << "Dimension  mismatch\n";
+		return;
+	}
+	for(int i=0; i < _row; i++)
+		for(int j=0; j < _col; j++)
+			_mat[i][j] += rhs._mat[i][j];
+	return;
+}
+
+template<typename T>
+void Matrix<T>::operator *=(const Matrix<T>& rhs)
+{
+	if( _col != rhs._row)
+	{
+		std::cerr << "Dimension  mismatch\n";
+		return;
+	}
+	Matrix<T> result(_row, rhs._col);
+	for(int i=0 ;i< _row; i++)
+		for(int j=0; j< rhs._col; j++)
+		{
+			result._mat[i][j] = 0;
+			for(int k=0; k< _col; k++)
+				result._mat[i][j] += _mat[i][k] * rhs._mat[k][j];  
+		}
+	_col = rhs._col;
+	_mat = result._mat;
+
+}
+
+// General functions
+template <typename T>
+inline Matrix<T>& Matrix<T>::eval()
+{
+	return *this;
+}
+
+
+
 /* Adds matrices using
  * generic lambda
  */
 struct ADD
 {
 	template<typename T>
-	inline static Matrix<T> _op(Matrix<T> &a, Matrix<T> &b)
+	inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
 	{
 		auto add_lambda = [](auto a, auto b){
 						  auto ret = a;
@@ -157,13 +219,12 @@ struct ADD
 
 						  for(int i=0; i < a._row; i++)
 							  for(int j=0; j < a._col; j++)
-									ret._mat[i][j] = a._mat[i][j] + b._mat[i][j];
+									ret[i][j] = a[i][j] + b[i][j];
 
 						return ret;
 		};
 		return add_lambda(a,b);
 	}
-
 };
 
 /* Multiplies matrices using
@@ -173,7 +234,7 @@ struct ADD
 struct MUL
 {
 	template <typename T>
-		inline static Matrix<T> _op(Matrix<T> &a, Matrix<T> &b)
+		inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
 		{
 			auto mul_lambda = [](auto a, auto b) {
 							  auto ret = a;
@@ -184,14 +245,14 @@ struct MUL
 							  }
 							  
 							  for(int i=0; i < a._row; i++)
-									ret._mat[i].resize(b._col);
+									ret[i].resize(b._col);
 
 							  for(int i=0; i < a._row; i++)
 								  for(int j=0; j < b._col; j++)
 								  {
-									  ret._mat[i][j] = 0;
+									  ret[i][j] = 0;
 									  for(int k=0; k < a._col; k++)
-										  ret._mat[i][j] += a._mat[i][k] * b._mat[k][j];
+										  ret[i][j] += a[i][k] * b[k][j];
 								  }
 							  return ret;
 
@@ -201,15 +262,16 @@ struct MUL
 };
 
 /* Overloaded operator for creating
- * expression templates
+ * expression templates while evaluating
+ * syntax
  */
 template <typename Expr1, typename Expr2>
-BinaryExpr<Expr1, Expr2, ADD> operator+ (Expr1 &l, Expr2 &r)
+BinaryExpr<Expr1, Expr2, ADD> operator+ (const Expr1 &l, const Expr2 &r)
 {
 	return BinaryExpr<Expr1, Expr2, ADD>(l,r);
 }
 template <typename Expr1, typename Expr2>
-BinaryExpr<Expr1, Expr2, MUL> operator* (Expr1 &l, Expr2 &r)
+BinaryExpr<Expr1, Expr2, MUL> operator* (const Expr1 &l, const Expr2 &r)
 {
 	return BinaryExpr<Expr1, Expr2, MUL>(l,r);
 }
@@ -218,29 +280,20 @@ BinaryExpr<Expr1, Expr2, MUL> operator* (Expr1 &l, Expr2 &r)
 
 int main()
 {
-	Matrix<int> mat1(2,2);
-	Matrix<int> mat2(2,2);
+	Matrix<int> mat1(20,20);
+	Matrix<int> mat2(20,20);
+	Matrix<int> mat3(20,20);
+	Matrix<int> mat4(20,20);
 
-	mat1._mat[0][0] = 1;
-	mat1._mat[0][1] = 0;
-	mat1._mat[1][0] = 0;
-	mat1._mat[1][1] = 1;
-
-	mat1.print();
-
+	for(int i=0;i<20;i++)
+		for(int j=0;j<20;j++)
+			mat1[i][j] = mat2[i][j] = mat3[i][j] = mat4[i][j] = 2;
 
 
-	mat2._mat[0][0] = 1;
-	mat2._mat[0][1] = 0;
-	mat2._mat[1][0] = 0;
-	mat2._mat[1][1] = 1;
+	Matrix<int> mat5(20,20);
+    mat5 = mat1 * mat2 * mat3 * mat4;
 
-	mat2.print();
-
-	Matrix<int> mat3(2,2);
-    mat3	= mat1 + mat2;
-
-	mat3.print();
+	mat5.print();
 
 }
 
