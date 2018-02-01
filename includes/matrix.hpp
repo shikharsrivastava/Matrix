@@ -8,6 +8,7 @@
 #ifndef INCLUDED_MATRIX
 #define INCLUDED_MATRIX
 #include<bits/stdc++.h>
+#include<chrono>
 
 
 	///////////////////////
@@ -20,6 +21,9 @@
  * while evaluating the expression tree using
  * expression templates
  */
+
+namespace Lib
+{
 
 template<typename Expr1, typename Expr2, typename OP>
 class BinaryExpr
@@ -73,6 +77,10 @@ class Matrix
 	// Getters
 	const uint& getRow();
 	const uint& getCol();
+
+	// Setters
+	void setRow(const uint r);
+	void setCol(const uint c);
 
 	// Overloaded operators
 	std::vector<T>& operator[](const uint ind);
@@ -140,6 +148,24 @@ template<typename T>
 inline const uint& Matrix<T>::getCol()
 {
 	return _col;
+}
+
+//Setters
+template<typename T>
+void Matrix<T>::setRow(const uint r)
+{
+	_row = r;
+	_mat.resize(_row, std::vector<T>(_col));
+	return;
+}
+
+template<typename T>
+void Matrix<T>::setCol(const uint c)
+{
+	_col = c;
+	for(int i=0;i<_row;i++)
+		_mat[i].resize(_col);
+
 }
 
 // Overloaded operators
@@ -276,26 +302,49 @@ BinaryExpr<Expr1, Expr2, MUL> operator* (const Expr1 &l, const Expr2 &r)
 	return BinaryExpr<Expr1, Expr2, MUL>(l,r);
 }
 
-
-
-int main()
+template <typename T>
+class RMatrix
 {
-	Matrix<int> mat1(20,20);
-	Matrix<int> mat2(20,20);
-	Matrix<int> mat3(20,20);
-	Matrix<int> mat4(20,20);
+	public:
+		int _r;
+		int _c;
+		std::vector<std::vector<T> > _mat;
+	RMatrix(int i, int j): _r(i), _c(j), _mat(std::vector<std::vector<T> >(_r, std::vector<T>(j)))
+	{}
 
-	for(int i=0;i<20;i++)
-		for(int j=0;j<20;j++)
-			mat1[i][j] = mat2[i][j] = mat3[i][j] = mat4[i][j] = 2;
+	std::vector<T>& operator[](int i)
+	{return _mat[i];}
+
+	RMatrix<T> operator+(RMatrix<T> a)
+	{
+		RMatrix<T> ret(_r,_c);
+
+		for(int i=0;i<_r;i++)
+			for(int j=0;j<_c;j++)
+				ret[i][j] = _mat[i][j] + a[i][j];
+		return ret;
+	}
+	
+	RMatrix<T> operator*(RMatrix<T> a)
+	{
+		RMatrix<T> ret(_r, a._c);
+
+		 for(int i=0; i < _r; i++)
+			  for(int j=0; j < a._c; j++)
+			  {
+				  ret[i][j] = 0;
+				  for(int k=0; k < _c; k++)
+				  ret[i][j] += _mat[i][k] * a[k][j];
+			  }
+		return ret;
+	}
+};
+
+} // namespace Lib ends
 
 
-	Matrix<int> mat5(20,20);
-    mat5 = mat1 * mat2 * mat3 * mat4;
 
-	mat5.print();
-
-}
 
 
 #endif
+
