@@ -11,11 +11,6 @@
 #include<chrono>
 
 
-	///////////////////////
-	//                   //
-	// class BinaryExpr  //
-	//                   //
-	///////////////////////
 
 /* Class to repressent binary expressions
  * while evaluating the expression tree using
@@ -33,22 +28,9 @@ class BinaryExpr
 	Expr2		_r;
 
 	public:
-	BinaryExpr(const Expr1 &l, const Expr2 &r)
-	: _l(l)
-	, _r(r)
-	{}
-
-	inline auto eval() 
-	{
-		return OP::_op(_l.eval(),_r.eval()); 
-	}
+	BinaryExpr(const Expr1 &l, const Expr2 &r);
+	auto eval(); 
 };
-
-/* Class to represent unary expressions 
- * while evaluating the expression tree.
- * By default it represents just an expression
- * without any operand
- */
 
 
 /* Matrix class represents the Matrix
@@ -104,6 +86,30 @@ class Matrix
 		std::cout<<std::endl;
 	}
 };
+
+
+
+	///////////////////////
+	//                   //
+	// class BinaryExpr  //
+	//                   //
+	///////////////////////
+	
+// Constructors
+template<typename Expr1, typename Expr2, typename OP>
+BinaryExpr<Expr1, Expr2, OP>::BinaryExpr(const Expr1 &l, const Expr2 &r)
+: _l(l)
+, _r(r)
+{}
+
+template<typename Expr1, typename Expr2, typename OP>
+inline auto BinaryExpr<Expr1, Expr2, OP>::eval() 
+{
+	return OP::_op(_l.eval(),_r.eval()); 
+}
+
+
+
 
 		///////////////////
 		//               //
