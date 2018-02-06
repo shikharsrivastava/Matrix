@@ -7,7 +7,8 @@
 
 #ifndef INCLUDED_MATRIX
 #define INCLUDED_MATRIX
-#include<bits/stdc++.h>
+#include<iostream>
+#include<vector>
 #include<chrono>
 
 

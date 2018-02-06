@@ -28,13 +28,10 @@ struct extractType<C<D>>
 
 
 /* Function templates to generate
- * random numbers of integer, flaot
+ * random numbers of integer, float
  * and complex data types
  */
 
-
-template<typename T, typename Enable = void>
-class RandomNumber;
 
 // Function returns a random integer (int, unsigned int, long long, unsigned long long)
 template<typename T>
@@ -82,7 +79,7 @@ void printRuntime(int nr, int nc)
 
 	std::cout<<"Performaing operations on 4 Random Matrices"<<std::endl;
 	
-	//	mersenne twister for random number generation
+	// mersenne twister for random number generation
 	boost::random::mt19937 gen(std::time(0));
 
 	double addResSum = 0;
