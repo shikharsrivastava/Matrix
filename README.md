@@ -2,7 +2,7 @@
 It is simple header only C++ matrix library using expression templates. It is compatible with C++14 and later. It can be used with any type of data (int,float, complex,etc).
 
 ## Usage
-Just include the matrix.hpp file in your program and you are ready to go. You can see the examples [here](/examples) It has the following functions to use -
+Just include the matrix.hpp file in your program and you are ready to go. The Matrix class exists in the namespace Lib. You can see the examples [here](/examples) It has the following functions to use -
 #### Constructors
 The library has 3 constructors :-
 * Default Constructor
