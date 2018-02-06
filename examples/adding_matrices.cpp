@@ -1,7 +1,7 @@
 #include "../includes/matrix.hpp"
 
 // Matrix class exist in namespace Lib
-using namespace Lib
+using namespace Lib;
 using namespace std;
 
 
