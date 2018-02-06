@@ -2,6 +2,8 @@
  * A simple header only Matrix library using
  * expression templates and generic lambdas 
  * for efficient matrix computations
+ *
+ * Author - Shikhar Srivastava
  */
 
 
@@ -22,14 +24,14 @@ namespace Lib
 {
 
 template<typename Expr1, typename Expr2, typename OP>
-class BinaryExpr
+class Expression
 {
 	protected:
 	Expr1		_l;
 	Expr2		_r;
 
 	public:
-	BinaryExpr(const Expr1 &l, const Expr2 &r);
+	Expression(const Expr1 &l, const Expr2 &r);
 	auto eval(); 
 };
 
@@ -54,6 +56,7 @@ class Matrix
 	// Constructors
 	Matrix();
 	Matrix(int r, int c);
+	Matrix(int r, int c, int def);
 	Matrix(const Matrix& dup);
 
 
@@ -69,7 +72,7 @@ class Matrix
 	std::vector<T>& operator[](const uint ind);
 	
 	template<typename Expr1, typename Expr2, typename OP>
-	Matrix<T>& operator=(BinaryExpr<Expr1, Expr2, OP> bexp);
+	Matrix<T>& operator=(Expression<Expr1, Expr2, OP> bexp);
 
 	void operator+=(const Matrix<T>& rhs);
 
@@ -77,34 +80,27 @@ class Matrix
 
 	// General functions
 	Matrix& eval();
-	void print()
-	{
-		for(int i=0;i< _row; i++) {
-			for(int j=0; j<_col;j++)
-				std::cout<<_mat[i][j]<< " ";
-			std::cout<<std::endl;
-		}
-		std::cout<<std::endl;
-	}
+	void print();
+	
 };
 
 
 
 	///////////////////////
 	//                   //
-	// class BinaryExpr  //
+	// class Expression  //
 	//                   //
 	///////////////////////
 	
 // Constructors
 template<typename Expr1, typename Expr2, typename OP>
-BinaryExpr<Expr1, Expr2, OP>::BinaryExpr(const Expr1 &l, const Expr2 &r)
+Expression<Expr1, Expr2, OP>::Expression(const Expr1 &l, const Expr2 &r)
 : _l(l)
 , _r(r)
 {}
 
 template<typename Expr1, typename Expr2, typename OP>
-inline auto BinaryExpr<Expr1, Expr2, OP>::eval() 
+inline auto Expression<Expr1, Expr2, OP>::eval() 
 {
 	return OP::_op(_l.eval(),_r.eval()); 
 }
@@ -112,11 +108,11 @@ inline auto BinaryExpr<Expr1, Expr2, OP>::eval()
 
 
 
-		///////////////////
-		//               //
-		//  Class Matrix //
-		//               //
-		///////////////////
+	///////////////////
+	//               //
+	//  Class Matrix //
+	//               //
+	///////////////////
 
 // Constructors
 template<typename T>
@@ -130,7 +126,14 @@ template<typename T>
 Matrix<T>::Matrix(int r, int c)
 : _row(r)
 , _col(c)
-, _mat(r,std::vector<T>(c))
+, _mat(r,std::vector<T>(c, 0))
+{}
+
+template<typename T>
+Matrix<T>::Matrix(int r, int c, int def)
+: _row(r)
+, _col(c)
+, _mat(r,std::vector<T>(c, def))
 {}
 
 template<typename T>
@@ -159,7 +162,7 @@ inline const uint& Matrix<T>::getCol()
 
 //Setters
 template<typename T>
-void Matrix<T>::setRow(const uint r)
+inline void Matrix<T>::setRow(const uint r)
 {
 	_row = r;
 	_mat.resize(_row, std::vector<T>(_col));
@@ -167,7 +170,7 @@ void Matrix<T>::setRow(const uint r)
 }
 
 template<typename T>
-void Matrix<T>::setCol(const uint c)
+inline void Matrix<T>::setCol(const uint c)
 {
 	_col = c;
 	for(int i=0;i<_row;i++)
@@ -184,14 +187,14 @@ inline std::vector<T>& Matrix<T>::operator[](const uint ind)
 
 template <typename T>
 template <typename Expr1, typename Expr2, typename OP>
-inline Matrix<T>& Matrix<T>::operator=(BinaryExpr<Expr1, Expr2, OP> bexp)
+inline Matrix<T>& Matrix<T>::operator=(Expression<Expr1, Expr2, OP> bexp)
 {
 	_mat = bexp.eval()._mat;
 	return *this;
 }
 
 template<typename T>
-void Matrix<T>::operator+=(const Matrix<T>& rhs)
+inline void Matrix<T>::operator+=(const Matrix<T>& rhs)
 {
 	if(_row != rhs._row || _col != rhs._col)
 	{
@@ -205,7 +208,7 @@ void Matrix<T>::operator+=(const Matrix<T>& rhs)
 }
 
 template<typename T>
-void Matrix<T>::operator *=(const Matrix<T>& rhs)
+inline void Matrix<T>::operator *=(const Matrix<T>& rhs)
 {
 	if( _col != rhs._row)
 	{
@@ -232,11 +235,31 @@ inline Matrix<T>& Matrix<T>::eval()
 	return *this;
 }
 
+template <typename T>
+inline void Matrix<T>::print()
+{
+	for(int i=0;i< _row; i++) {
+		for(int j=0; j<_col;j++)
+			std::cout<<_mat[i][j]<< " ";
 
+		std::cout<<std::endl;
+	}
+		std::cout<<std::endl;
+}
+
+	
+
+
+	///////////////////
+	//               //
+	//  Class ADD    //
+	//               //
+	///////////////////
 
 /* Adds matrices using
  * generic lambda
  */
+
 struct ADD
 {
 	template<typename T>
@@ -260,6 +283,13 @@ struct ADD
 	}
 };
 
+
+	///////////////////
+	//               //
+	//  Class MUL    //
+	//               //
+	///////////////////
+
 /* Multiplies matrices using
  * generic lambda
  */
@@ -267,31 +297,30 @@ struct ADD
 struct MUL
 {
 	template <typename T>
-		inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
-		{
-			auto mul_lambda = [](auto a, auto b) {
-							  auto ret = a;
-			   				  if(a._col != b._row)
+	inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
+	{
+		auto mul_lambda = [](auto a, auto b) {
+						  auto ret = a;
+		   				  if(a._col != b._row)
+						  {
+							  std::cerr<< "Wrong size\n";
+							  return a;
+						  }
+
+						  for(int i=0; i < a._row; i++)
+								ret[i].resize(b._col);
+
+						  for(int i=0; i < a._row; i++)
+							  for(int j=0; j < b._col; j++)
 							  {
-								  std::cerr<< "Wrong size\n";
-								  return a;
+								  ret[i][j] = 0;
+								  for(int k=0; k < a._col; k++)
+								  ret[i][j] += a[i][k] * b[k][j];
 							  }
-							  
-							  for(int i=0; i < a._row; i++)
-									ret[i].resize(b._col);
-
-							  for(int i=0; i < a._row; i++)
-								  for(int j=0; j < b._col; j++)
-								  {
-									  ret[i][j] = 0;
-									  for(int k=0; k < a._col; k++)
-										  ret[i][j] += a[i][k] * b[k][j];
-								  }
-							  return ret;
-
+						  return ret;
 			};
-			return mul_lambda(a, b);
-		}
+		return mul_lambda(a, b);
+	}
 };
 
 /* Overloaded operator for creating
@@ -299,53 +328,16 @@ struct MUL
  * syntax
  */
 template <typename Expr1, typename Expr2>
-BinaryExpr<Expr1, Expr2, ADD> operator+ (const Expr1 &l, const Expr2 &r)
+Expression<Expr1, Expr2, ADD> operator+ (const Expr1 &l, const Expr2 &r)
 {
-	return BinaryExpr<Expr1, Expr2, ADD>(l,r);
+	return Expression<Expr1, Expr2, ADD>(l,r);
 }
 template <typename Expr1, typename Expr2>
-BinaryExpr<Expr1, Expr2, MUL> operator* (const Expr1 &l, const Expr2 &r)
+Expression<Expr1, Expr2, MUL> operator* (const Expr1 &l, const Expr2 &r)
 {
-	return BinaryExpr<Expr1, Expr2, MUL>(l,r);
+	return Expression<Expr1, Expr2, MUL>(l,r);
 }
 
-template <typename T>
-class RMatrix
-{
-	public:
-		int _r;
-		int _c;
-		std::vector<std::vector<T> > _mat;
-	RMatrix(int i, int j): _r(i), _c(j), _mat(std::vector<std::vector<T> >(_r, std::vector<T>(j)))
-	{}
-
-	std::vector<T>& operator[](int i)
-	{return _mat[i];}
-
-	RMatrix<T> operator+(RMatrix<T> a)
-	{
-		RMatrix<T> ret(_r,_c);
-
-		for(int i=0;i<_r;i++)
-			for(int j=0;j<_c;j++)
-				ret[i][j] = _mat[i][j] + a[i][j];
-		return ret;
-	}
-	
-	RMatrix<T> operator*(RMatrix<T> a)
-	{
-		RMatrix<T> ret(_r, a._c);
-
-		 for(int i=0; i < _r; i++)
-			  for(int j=0; j < a._c; j++)
-			  {
-				  ret[i][j] = 0;
-				  for(int k=0; k < _c; k++)
-				  ret[i][j] += _mat[i][k] * a[k][j];
-			  }
-		return ret;
-	}
-};
 
 } // namespace Lib ends
 

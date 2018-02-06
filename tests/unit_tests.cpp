@@ -1,9 +1,76 @@
+/* Using Boost Test framework.
+ * Info - http://www.boost.org/doc/libs/1_53_0/libs/test/doc/html/utf.html
+ *
+ * Unit Tests for Matrix library
+ * Author - Shikhar Srivastava
+ */
+
 #define BOOST_TEST_MODULE matrix_lib
 #define BOOST_TEST_DYN_LINK
 #include <boost/test/included/unit_test_framework.hpp>
 #include "../includes/matrix.hpp"
 #include <iostream>
 #include <complex>
+
+
+BOOST_AUTO_TEST_SUITE(function_tests)
+
+BOOST_AUTO_TEST_CASE(constructors) {
+
+	// Default Constructor()
+	Lib::Matrix<int> mat1;
+
+	BOOST_CHECK(mat1.getRow() == 0);
+	BOOST_CHECK(mat1.getCol() == 0);
+
+	// Constructor with row and col and no value
+	Lib::Matrix<int> mat2(2,2);
+	
+	BOOST_CHECK(mat2.getRow() == 2);
+	BOOST_CHECK(mat2.getCol() == 2);
+
+	// Checking default value
+	for(int i=0; i<mat2.getRow(); i++)
+		for(int j=0; j< mat2.getCol(); j++)
+			BOOST_CHECK(mat2[i][j] == 0);
+
+	// Constructor with row, col and a default value
+	Lib::Matrix<int> mat3(2,2,5);
+	
+	BOOST_CHECK(mat3.getRow() == 2);
+	BOOST_CHECK(mat3.getCol() == 2);
+
+	// Checking default value
+	for(int i=0; i<mat3.getRow(); i++)
+		for(int j=0; j< mat3.getCol(); j++)
+			BOOST_CHECK(mat3[i][j] == 5);
+
+	// Copy Constructor
+	Lib::Matrix<int> mat4(mat3);
+
+	BOOST_CHECK(mat4.getRow() == mat3.getRow());
+	BOOST_CHECK(mat4.getCol() == mat3.getCol());
+
+	// Checking copied value
+	for(int i=0; i<mat4.getRow(); i++)
+		for(int j=0; j< mat4.getCol(); j++)
+			BOOST_CHECK(mat4[i][j] == mat3[i][j]);
+
+}
+
+BOOST_AUTO_TEST_CASE(setters) {
+
+	Lib::Matrix<int> mat1;
+
+	mat1.setRow(4);
+	BOOST_CHECK(mat1.getRow() == 4);
+
+	mat1.setCol(5);
+	BOOST_CHECK(mat1.getCol() == 5);
+
+}
+
+BOOST_AUTO_TEST_SUITE_END()
 
 
 BOOST_AUTO_TEST_SUITE(integer_addition_tests)
@@ -35,8 +102,8 @@ BOOST_AUTO_TEST_CASE(type_int) {
 	res = mat1 + mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -73,8 +140,8 @@ BOOST_AUTO_TEST_CASE(type_unsigned_int) {
 	res = mat1 + mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -110,8 +177,8 @@ BOOST_AUTO_TEST_CASE(type_long_long) {
 	res = mat1 + mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -147,8 +214,8 @@ BOOST_AUTO_TEST_CASE(type_unsigned_long_long) {
 	res = mat1 + mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -190,8 +257,8 @@ BOOST_AUTO_TEST_CASE(type_float) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -227,8 +294,8 @@ BOOST_AUTO_TEST_CASE(type_double) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -266,8 +333,8 @@ BOOST_AUTO_TEST_CASE(type_long_double) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -309,9 +376,8 @@ BOOST_AUTO_TEST_CASE(type_complex_int) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
-
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 	// Checking for generated values
 	for(int i=0; i<3; i++)
 		for(int j=0; j<3; j++)
@@ -346,8 +412,8 @@ BOOST_AUTO_TEST_CASE(type_complex_unsigned_int) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -385,8 +451,8 @@ BOOST_AUTO_TEST_CASE(type_complex_long_long) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -424,8 +490,8 @@ BOOST_AUTO_TEST_CASE(type_complex_unsigned_long_long) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -463,8 +529,8 @@ BOOST_AUTO_TEST_CASE(type_complex_float) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -501,8 +567,8 @@ BOOST_AUTO_TEST_CASE(type_complex_double) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -538,8 +604,8 @@ BOOST_AUTO_TEST_CASE(type_complex_long_double) {
 	res = mat1 + mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -584,8 +650,8 @@ BOOST_AUTO_TEST_CASE(type_int) {
 	res = mat1 * mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -623,8 +689,8 @@ BOOST_AUTO_TEST_CASE(type_unsigned_int) {
 
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -660,8 +726,8 @@ BOOST_AUTO_TEST_CASE(type_long_long) {
 	res = mat1 * mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -697,8 +763,8 @@ BOOST_AUTO_TEST_CASE(type_unsigned_long_long) {
 	res = mat1 * mat2;
 	
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -740,8 +806,8 @@ BOOST_AUTO_TEST_CASE(type_float) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -786,23 +852,14 @@ BOOST_AUTO_TEST_CASE(type_double) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
 		for(int j=0; j<3; j++)
 			BOOST_CHECK(res[i][j] == mat3[i][j]);
 
-	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
-
-	// Checking for generated values
-	for(int i=0; i<3; i++)
-		for(int j=0; j<3; j++)
-			BOOST_CHECK(res[i][j] == mat3[i][j]);
-	
 
 }
 
@@ -834,9 +891,8 @@ BOOST_AUTO_TEST_CASE(type_long_double) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
-
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 	// Checking for generated values
 	for(int i=0; i<3; i++)
 		for(int j=0; j<3; j++)
@@ -876,8 +932,8 @@ BOOST_AUTO_TEST_CASE(type_complex_int) {
 
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -915,8 +971,8 @@ BOOST_AUTO_TEST_CASE(type_complex_long_long) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -956,8 +1012,8 @@ BOOST_AUTO_TEST_CASE(type_complex_float) {
 
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -994,8 +1050,8 @@ BOOST_AUTO_TEST_CASE(type_complex_double) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
@@ -1031,8 +1087,8 @@ BOOST_AUTO_TEST_CASE(type_complex_long_double) {
 	res = mat1 * mat2;
 
 	// Checking dimensions of result matrix
-	BOOST_CHECK(mat3.getRow() == mat1.getRow() && mat3.getRow() == mat2.getRow());
-	BOOST_CHECK(mat3.getCol() == mat1.getCol() && mat3.getCol() == mat2.getCol());
+	BOOST_CHECK(mat3.getRow() == mat1.getRow() && res.getRow() == mat3.getRow());
+	BOOST_CHECK(mat3.getCol() == mat2.getCol() && res.getCol() == mat3.getCol());
 
 	// Checking for generated values
 	for(int i=0; i<3; i++)
