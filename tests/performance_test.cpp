@@ -72,7 +72,7 @@ T getRandom(boost::random::mt19937& gen, typename std::enable_if<std::is_same<T,
  */
 
 template <typename T>
-void printRuntime(int nr, int nc)
+void printRuntime()
 {
 	
 	typedef std::chrono::high_resolution_clock::time_point time;
@@ -88,11 +88,11 @@ void printRuntime(int nr, int nc)
 	double mulEquSum = 0;
 
 	// Creating 4 matrices 
-	std::vector<Lib::Matrix<T> > mat(4,Lib::Matrix<T>(nr,nc));
+	std::vector<Lib::Matrix<T> > mat(4,Lib::Matrix<T>(MATRIX_ROW, MATRIX_COL));
 
 	// Mtrices to store results of operation
-	Lib::Matrix<T> addRes(nr,nc);
-	Lib::Matrix<T> mulRes(nr,nc);
+	Lib::Matrix<T> addRes(MATRIX_ROW, MATRIX_COL);
+	Lib::Matrix<T> mulRes(MATRIX_ROW, MATRIX_COL);
 
 	time t1,t2;
 
@@ -103,8 +103,8 @@ void printRuntime(int nr, int nc)
 		// Populating matrices with random values
 
 		for(int i=0;i< 4;i++)
-			for(int r=0; r< nr; r++)
-				for(int c=0; c< nc; c++)
+			for(int r=0; r< MATRIX_ROW; r++)
+				for(int c=0; c< MATRIX_COL; c++)
 					mat[i][r][c] = getRandom<T>(gen);
 
 
@@ -151,52 +151,52 @@ int main()
 	// integer types
 
 	std::cout<<"\nMeasuring performance for <int>\n";
-	printRuntime<int> (4,4);
+	printRuntime<int> ();
 
 	std::cout<<"\nMeasuring performance for <unsigned int>\n";
-	printRuntime<unsigned int> (4,4);
+	printRuntime<unsigned int> ();
 	
 	std::cout<<"\nMeasuring performance for <long long int>\n";
-	printRuntime<long long int> (4,4);
+	printRuntime<long long int> ();
 
 	std::cout<<"\nMeasuring performance for <unsigned long long int>\n";
-	printRuntime<unsigned long long int> (4,4);
+	printRuntime<unsigned long long int> ();
 
 
 	// floating points
 	
 	std::cout<<"\nMeasuring performance for <float>\n";
-	printRuntime<float> (4,4);
+	printRuntime<float> ();
 
 	std::cout<<"\nMeasuring performance for <double>\n";
-	printRuntime<double> (4,4);
+	printRuntime<double> ();
 
 	std::cout<<"\nMeasuring performance for <long double>\n";
-	printRuntime<long double> (4,4);
+	printRuntime<long double> ();
 
 
 	// complex numbers
 	
 	std::cout<<"\nMeasuring performance for complex<int>\n";
-	printRuntime<std::complex<int> > (4,4);
+	printRuntime<std::complex<int> > ();
 
 	std::cout<<"\nMeasuring performance for complex<unsigned int>\n";
-	printRuntime<std::complex<unsigned int> > (4,4);
+	printRuntime<std::complex<unsigned int> > ();
 
 	std::cout<<"\nMeasuring performance for complex<long long int>\n";
-	printRuntime<std::complex<long long int> > (4,4);
+	printRuntime<std::complex<long long int> > ();
 
 	std::cout<<"\nMeasuring performance for complex<unsigned long long int>\n";
-	printRuntime<std::complex<unsigned long long int> > (4,4);
+	printRuntime<std::complex<unsigned long long int> > ();
 
 	std::cout<<"\nMeasuring performance for complex<float>\n";
-	printRuntime<std::complex<float> > (4,4);
+	printRuntime<std::complex<float> > ();
 
 	std::cout<<"\nMeasuring performance for complex<double>\n";
-	printRuntime<std::complex<double> > (4,4);
+	printRuntime<std::complex<double> > ();
 
 	std::cout<<"\nMeasuring performance for complex<long double>\n";
-	printRuntime<std::complex<long double> > (4,4);
+	printRuntime<std::complex<long double> > ();
 
 
 	return 0;
