@@ -48,11 +48,14 @@ class Matrix
 	// typedefs
 	typedef std::vector< std::vector<T> > 	type;
 	
+	protected:
 	// Data members
 	uint 			_row;
 	uint			_col;
 	type			_mat;
 
+
+	public:
 	// Constructors
 	Matrix();
 	Matrix(int r, int c);
@@ -61,8 +64,8 @@ class Matrix
 
 
 	// Getters
-	const uint& getRow();
-	const uint& getCol();
+	const uint& getRow() const;
+	const uint& getCol() const;
 
 	// Setters
 	void setRow(const uint r);
@@ -138,8 +141,8 @@ Matrix<T>::Matrix(int r, int c, int def)
 
 template<typename T>
 Matrix<T>::Matrix(const Matrix& dup)
-: _row(dup._row)
-, _col(dup._col)
+: _row(dup.getRow())
+, _col(dup.getCol())
 , _mat(_row, std::vector<T>(_col))
 {
 	for(int i=0; i < _row; i++)
@@ -149,13 +152,13 @@ Matrix<T>::Matrix(const Matrix& dup)
 
 // Getters
 template<typename T>
-inline const uint& Matrix<T>::getRow()
+inline const uint& Matrix<T>::getRow() const
 {
 	return _row;
 }
 
 template<typename T>
-inline const uint& Matrix<T>::getCol()
+inline const uint& Matrix<T>::getCol() const
 {
 	return _col;
 }
@@ -196,7 +199,7 @@ inline Matrix<T>& Matrix<T>::operator=(Expression<Expr1, Expr2, OP> bexp)
 template<typename T>
 inline void Matrix<T>::operator+=(const Matrix<T>& rhs)
 {
-	if(_row != rhs._row || _col != rhs._col)
+	if(_row != rhs.getRow() || _col != rhs.getCol())
 	{
 		std::cerr << "Dimension  mismatch\n";
 		return;
@@ -210,20 +213,22 @@ inline void Matrix<T>::operator+=(const Matrix<T>& rhs)
 template<typename T>
 inline void Matrix<T>::operator *=(const Matrix<T>& rhs)
 {
-	if( _col != rhs._row)
+	if( _col != rhs.getRow())
 	{
 		std::cerr << "Dimension  mismatch\n";
 		return;
 	}
-	Matrix<T> result(_row, rhs._col);
+
+	Matrix<T> result(_row, rhs.getCol());
+	
 	for(int i=0 ;i< _row; i++)
-		for(int j=0; j< rhs._col; j++)
+		for(int j=0; j< rhs.getCol(); j++)
 		{
 			result._mat[i][j] = 0;
 			for(int k=0; k< _col; k++)
 				result._mat[i][j] += _mat[i][k] * rhs._mat[k][j];  
 		}
-	_col = rhs._col;
+	_col = rhs.getCol();
 	_mat = result._mat;
 
 }
@@ -267,14 +272,14 @@ struct ADD
 	{
 		auto add_lambda = [](auto a, auto b){
 						  auto ret = a;
-						  if(a._row != b._row || a._col != b._col)
+						  if(a.getRow() != b.getRow() || a.getCol() != b.getCol())
 						  {
 							  std::cerr << " Wrong size\n";
 							return ret;
 						  }
 
-						  for(int i=0; i < a._row; i++)
-							  for(int j=0; j < a._col; j++)
+						  for(int i=0; i < a.getRow(); i++)
+							  for(int j=0; j < a.getCol(); j++)
 									ret[i][j] = a[i][j] + b[i][j];
 
 						return ret;
@@ -301,21 +306,21 @@ struct MUL
 	{
 		auto mul_lambda = [](auto a, auto b) {
 						  auto ret = a;
-		   				  if(a._col != b._row)
+		   				  if(a.getCol() != b.getRow())
 						  {
 							  std::cerr<< "Wrong size\n";
 							  return a;
 						  }
 
-						  for(int i=0; i < a._row; i++)
-								ret[i].resize(b._col);
+						  for(int i=0; i < a.getRow(); i++)
+								ret[i].resize(b.getCol());
 
-						  for(int i=0; i < a._row; i++)
-							  for(int j=0; j < b._col; j++)
+						  for(int i=0; i < a.getRow(); i++)
+							  for(int j=0; j < b.getCol(); j++)
 							  {
 								  ret[i][j] = 0;
-								  for(int k=0; k < a._col; k++)
-								  ret[i][j] += a[i][k] * b[k][j];
+								  for(int k=0; k < a.getCol(); k++)
+								  	ret[i][j] += a[i][k] * b[k][j];
 							  }
 						  return ret;
 			};
