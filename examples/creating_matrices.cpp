@@ -17,6 +17,8 @@ int main()
 	// A 4x5 matrix with every value 200 is initiaised
 	Matrix<int> m3(4,5,200);
 
+	cout<<"m3 = \n";
+	m3.print();
 	/*
 	*	Now you can do anything
 	*	with these matrices

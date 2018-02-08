@@ -15,13 +15,14 @@
 
 
 
+namespace Lib
+{
+
+
 /* Class to repressent binary expressions
  * while evaluating the expression tree using
  * expression templates
  */
-
-namespace Lib
-{
 
 template<typename Expr1, typename Expr2, typename OP>
 class Expression
@@ -33,6 +34,33 @@ class Expression
 	public:
 	Expression(const Expr1 &l, const Expr2 &r);
 	auto eval(); 
+};
+
+
+// Forward declaration of Matrix class
+template<typename T>
+class Matrix;
+
+/* Adds matrices using
+ * generic lambda
+ */
+
+struct ADD
+{
+	template<typename T>
+	static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b);
+
+};
+
+/* Multiplies matrices using
+ * generic lambda
+ */
+
+struct MUL
+{
+	template <typename T>
+	inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b);
+
 };
 
 
@@ -74,13 +102,20 @@ class Matrix
 	// Overloaded operators
 	std::vector<T>& operator[](const uint ind);
 	
-	template<typename Expr1, typename Expr2, typename OP>
-	Matrix<T>& operator=(Expression<Expr1, Expr2, OP> bexp);
+	template<typename Expr>
+	Matrix<T>& operator=(Expr bexp);
 
+	template<typename Expr>
+	void operator+=(Expr bexp);
+
+	template<typename Expr>
+	void operator*=(Expr bexp);
+
+	/*
 	void operator+=(const Matrix<T>& rhs);
 
 	void operator*=(const Matrix<T>& rhs);
-
+	*/
 	// General functions
 	Matrix& eval();
 	void print();
@@ -102,6 +137,7 @@ Expression<Expr1, Expr2, OP>::Expression(const Expr1 &l, const Expr2 &r)
 , _r(r)
 {}
 
+// Eval function
 template<typename Expr1, typename Expr2, typename OP>
 inline auto Expression<Expr1, Expr2, OP>::eval() 
 {
@@ -109,6 +145,68 @@ inline auto Expression<Expr1, Expr2, OP>::eval()
 }
 
 
+
+
+	///////////////////
+	//               //
+	//  Class ADD    //
+	//               //
+	///////////////////
+
+// _op function for addition
+template <typename T>
+inline Matrix<T> ADD::_op(const Matrix<T> &a, const Matrix<T> &b)
+{
+	auto add_lambda = [](auto a, auto b){
+					  auto ret = a;
+					  if(a.getRow() != b.getRow() || a.getCol() != b.getCol())
+					  {
+						  std::cerr << " Wrong size\n";
+						return ret;
+					  }
+
+					  for(int i=0; i < a.getRow(); i++)
+						  for(int j=0; j < a.getCol(); j++)
+								ret[i][j] = a[i][j] + b[i][j];
+
+					return ret;
+	};
+	return add_lambda(a,b);
+}
+
+
+	///////////////////
+	//               //
+	//  Class MUL    //
+	//               //
+	///////////////////
+
+// _op function for multiplication
+template <typename T>
+inline Matrix<T> MUL::_op(const Matrix<T> &a, const Matrix<T> &b)
+{
+	auto mul_lambda = [](auto a, auto b) {
+					  auto ret = a;
+	   				  if(a.getCol() != b.getRow())
+					  {
+						  std::cerr<< "Wrong size\n";
+						  return a;
+					  }
+
+					  for(int i=0; i < a.getRow(); i++)
+							ret[i].resize(b.getCol());
+
+					  for(int i=0; i < a.getRow(); i++)
+						  for(int j=0; j < b.getCol(); j++)
+						  {
+							  ret[i][j] = 0;
+							  for(int k=0; k < a.getCol(); k++)
+							  	ret[i][j] += a[i][k] * b[k][j];
+						  }
+					  return ret;
+		};
+	return mul_lambda(a, b);
+}
 
 
 	///////////////////
@@ -150,6 +248,7 @@ Matrix<T>::Matrix(const Matrix& dup)
 			_mat[i][j] = dup._mat[i][j];
 }
 
+
 // Getters
 template<typename T>
 inline const uint& Matrix<T>::getRow() const
@@ -189,49 +288,29 @@ inline std::vector<T>& Matrix<T>::operator[](const uint ind)
 }
 
 template <typename T>
-template <typename Expr1, typename Expr2, typename OP>
-inline Matrix<T>& Matrix<T>::operator=(Expression<Expr1, Expr2, OP> bexp)
+template <typename Expr>
+inline Matrix<T>& Matrix<T>::operator=(Expr bexp)
 {
-	_mat = bexp.eval()._mat;
+	*this = bexp.eval();	
 	return *this;
 }
 
 template<typename T>
-inline void Matrix<T>::operator+=(const Matrix<T>& rhs)
+template<typename Expr>
+inline void Matrix<T>::operator+=(Expr bexp)
 {
-	if(_row != rhs.getRow() || _col != rhs.getCol())
-	{
-		std::cerr << "Dimension  mismatch\n";
-		return;
-	}
-	for(int i=0; i < _row; i++)
-		for(int j=0; j < _col; j++)
-			_mat[i][j] += rhs._mat[i][j];
-	return;
+	*this = ADD::_op(*this, bexp.eval());
+	
 }
 
 template<typename T>
-inline void Matrix<T>::operator *=(const Matrix<T>& rhs)
+template<typename Expr>
+inline void Matrix<T>::operator*=(Expr bexp)
 {
-	if( _col != rhs.getRow())
-	{
-		std::cerr << "Dimension  mismatch\n";
-		return;
-	}
-
-	Matrix<T> result(_row, rhs.getCol());
-	
-	for(int i=0 ;i< _row; i++)
-		for(int j=0; j< rhs.getCol(); j++)
-		{
-			result._mat[i][j] = 0;
-			for(int k=0; k< _col; k++)
-				result._mat[i][j] += _mat[i][k] * rhs._mat[k][j];  
-		}
-	_col = rhs.getCol();
-	_mat = result._mat;
+	*this = MUL::_op(*this, bexp.eval());
 
 }
+
 
 // General functions
 template <typename T>
@@ -253,80 +332,6 @@ inline void Matrix<T>::print()
 }
 
 	
-
-
-	///////////////////
-	//               //
-	//  Class ADD    //
-	//               //
-	///////////////////
-
-/* Adds matrices using
- * generic lambda
- */
-
-struct ADD
-{
-	template<typename T>
-	inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
-	{
-		auto add_lambda = [](auto a, auto b){
-						  auto ret = a;
-						  if(a.getRow() != b.getRow() || a.getCol() != b.getCol())
-						  {
-							  std::cerr << " Wrong size\n";
-							return ret;
-						  }
-
-						  for(int i=0; i < a.getRow(); i++)
-							  for(int j=0; j < a.getCol(); j++)
-									ret[i][j] = a[i][j] + b[i][j];
-
-						return ret;
-		};
-		return add_lambda(a,b);
-	}
-};
-
-
-	///////////////////
-	//               //
-	//  Class MUL    //
-	//               //
-	///////////////////
-
-/* Multiplies matrices using
- * generic lambda
- */
-
-struct MUL
-{
-	template <typename T>
-	inline static Matrix<T> _op(const Matrix<T> &a, const Matrix<T> &b)
-	{
-		auto mul_lambda = [](auto a, auto b) {
-						  auto ret = a;
-		   				  if(a.getCol() != b.getRow())
-						  {
-							  std::cerr<< "Wrong size\n";
-							  return a;
-						  }
-
-						  for(int i=0; i < a.getRow(); i++)
-								ret[i].resize(b.getCol());
-
-						  for(int i=0; i < a.getRow(); i++)
-							  for(int j=0; j < b.getCol(); j++)
-							  {
-								  ret[i][j] = 0;
-								  for(int k=0; k < a.getCol(); k++)
-								  	ret[i][j] += a[i][k] * b[k][j];
-							  }
-						  return ret;
-			};
-		return mul_lambda(a, b);
-	}
-};
 
 /* Overloaded operator for creating
  * expression templates while evaluating

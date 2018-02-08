@@ -24,9 +24,9 @@ int main()
 	cout<<"m3 = \n";
 	m3.print();
 
-	// Multiplying three matrices
-	Matrix<int> m4(2,2);
-	m4 = m1 * m2 * m3;
+	// Multiplying three matrices using *=
+	Matrix<int> m4(2,2,1);
+	m4 *= m1 * m2 * m3;
 	// printing result
 	cout<<"m4 = \n";
 	m4.print();

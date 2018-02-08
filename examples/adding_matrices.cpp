@@ -23,9 +23,9 @@ int main()
 	cout<<"m3 = \n";
 	m3.print();
 
-	// Adding three matrices
+	// Adding three matrices (using +=)
 	Matrix<int> m4(2,2);
-	m4 = m1 + m2 + m3;
+	m4 += m1 + m2 + m3;
 
 	// printing result
 	cout<<"m4 = \n";
