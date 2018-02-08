@@ -11,8 +11,6 @@
 #define INCLUDED_MATRIX
 #include<iostream>
 #include<vector>
-#include<chrono>
-
 
 
 namespace Lib
@@ -111,11 +109,6 @@ class Matrix
 	template<typename Expr>
 	void operator*=(Expr bexp);
 
-	/*
-	void operator+=(const Matrix<T>& rhs);
-
-	void operator*=(const Matrix<T>& rhs);
-	*/
 	// General functions
 	Matrix& eval();
 	void print();
